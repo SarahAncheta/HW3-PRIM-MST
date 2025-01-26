@@ -41,4 +41,53 @@ class Graph:
         `heapify`, `heappop`, and `heappush` functions.
 
         """
-        self.mst = None
+
+        adj_mat = self.adj_mat
+        
+        S = set() #set of nodes
+        T = []
+
+        n = len(adj_mat[0]) #get the number of nodes in the square matrix
+        start = 0 #we start with the first node, 0
+
+        pred = n*[None] #initialize the parents of the nodes as None, as they are not connected yet
+        pred[start] = -1 #set the parent of start node as itself, designated with -1
+
+        cost = n*[np.inf] #initilize the cost of all nodes as inf
+        cost[start]= 0 #except the start node, which has distance 0 to itself
+
+        pq = []
+        
+
+        for node, costval in enumerate(cost):
+            heapq.heappush(pq, (costval, node))
+
+        while pq: 
+            q = heapq.heappop(pq)
+            u = q[1]
+
+            if u in S:
+                continue
+
+            S.add(u)
+
+            if pred[u] != -1: 
+                T.append((pred[u], u))
+
+            for i in range(n):
+                if (u != i) and (i not in S) and (adj_mat[u][i] < cost[i]) and (adj_mat[u][i] > 0):
+                    heapq.heappush(pq, (adj_mat[u][i], i))
+                    cost[i] = adj_mat[u][i]
+                    pred[i] = u
+
+        mst = np.zeros((n, n))
+        for u, v in T:
+            mst[u][v] = adj_mat[u][v]
+            mst[v][u] = adj_mat[u][v]
+        
+        self.mst = mst
+
+            
+        
+
+

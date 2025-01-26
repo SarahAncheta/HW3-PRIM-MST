@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
-from mst import Graph
+
+from mst.graph import Graph
 from sklearn.metrics import pairwise_distances
 
 
@@ -71,4 +72,8 @@ def test_mst_student():
     TODO: Write at least one unit test for MST construction.
     
     """
+    pass
+
+def test_mst_student2():
+
     pass

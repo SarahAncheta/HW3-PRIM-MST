@@ -1,6 +1,6 @@
 """
 BMI 203: Biocomputing Algorithms - Winter 2023
-HW 4: Prim's Algorithm
+HW 3: Prim's Algorithm
 """
 
 from .graph import Graph
