@@ -2,5 +2,5 @@ networkx==2.5
 pytest>=3.0
 
 pytest>=3.0
-numpy>=2.2.2
+numpy>=2.0.0
 scikit-learn>=1.6.1
