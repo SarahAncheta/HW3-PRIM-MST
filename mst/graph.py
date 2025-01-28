@@ -43,9 +43,19 @@ class Graph:
         """
 
         adj_mat = self.adj_mat
+
+        if adj_mat.size == 0:
+            raise ValueError("This adjacency matrix is empty")
         
+        if np.any(np.vectorize(lambda x: isinstance(x, str))(adj_mat)):
+            raise ValueError("This adjacency matrix contains strings")
+        
+        if np.isnan(adj_mat).any():
+            raise ValueError("This adjacency matrix contains NaNs")
+        
+
         S = set() #set of nodes
-        T = []
+        T = [] #holds the minimum spanning tree node and parent node
 
         n = len(adj_mat[0]) #get the number of nodes in the square matrix
         start = 0 #we start with the first node, 0
@@ -59,28 +69,28 @@ class Graph:
         pq = []
         
 
-        for node, costval in enumerate(cost):
+        for node, costval in enumerate(cost): #we add each of the nodes and the inital cost value to the heapq
             heapq.heappush(pq, (costval, node))
 
-        while pq: 
+        while pq: #while we have items in the list to through, we pop off the node/path with the lowest cost
             q = heapq.heappop(pq)
             u = q[1]
 
-            if u in S:
+            if u in S: #if the node is not already in the set of nodes we have seen, then we will add it to S
                 continue
 
             S.add(u)
 
-            if pred[u] != -1: 
+            if pred[u] != -1: #if it isn't the start node, we add it to the path of the minimum spanning tree with its parent
                 T.append((pred[u], u))
 
-            for i in range(n):
+            for i in range(n): #we add the leaves of the node to the heap if the cost is less than the current cost
                 if (u != i) and (i not in S) and (adj_mat[u][i] < cost[i]) and (adj_mat[u][i] > 0):
                     heapq.heappush(pq, (adj_mat[u][i], i))
                     cost[i] = adj_mat[u][i]
                     pred[i] = u
 
-        mst = np.zeros((n, n))
+        mst = np.zeros((n, n)) #we build up the mst solution, based on the pairs of parent nodes and current nodes, and their weights
         for u, v in T:
             mst[u][v] = adj_mat[u][v]
             mst[v][u] = adj_mat[u][v]

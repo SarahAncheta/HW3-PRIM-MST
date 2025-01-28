@@ -36,6 +36,23 @@ def check_mst(adj_mat: np.ndarray,
             total += mst[i, j]
     assert approx_equal(total, expected_weight), 'Proposed MST has incorrect expected weight'
 
+    """
+    An MST should have n - 1 edges (n is number of nodes).
+    divide the total number of nonzeros by two, because the matrix is symmetric
+    """
+    assert (mst.shape[0] - 1)  == (np.count_nonzero(mst)/2)
+
+    """
+    We check if the mst is fully connected (they are always connected) using a linear algebra trick that I looked up
+    https://math.stackexchange.com/questions/864604/checking-connectivity-of-adjacency-matrix
+    we square the matrix to the power of the number of nodes
+    if any of the rows or columns is zero, then that node is isolated
+    """
+
+    reachability = np.linalg.matrix_power(mst, mst.shape[0]) #we use a linear algebra trick that I looked up
+    assert not (reachability == 0).all(axis=0).any()
+
+
 
 def test_mst_small():
     """
@@ -66,14 +83,46 @@ def test_mst_single_cell_data():
     check_mst(g.adj_mat, g.mst, 57.263561605571695)
 
 
-def test_mst_student():
+def test_mst_empty_data():
     """
     
-    TODO: Write at least one unit test for MST construction.
+    Unit test, should raise exception if given an empty array (adjacency matrix is empty)
     
     """
-    pass
+    g = Graph(np.array([]))
+    with pytest.raises(ValueError):
+        g.construct_mst()
 
-def test_mst_student2():
+def test_mst_strings():
+    """
+    
+    Unit test, should raise exception if given an array that contains strings
+    
+    """
 
-    pass
+    words = np.array([
+    [0, 1, "a"],
+    [1, 0, 2],
+    [2, 1, 0]])
+
+    g = Graph(words)
+
+    with pytest.raises(ValueError):
+        g.construct_mst()
+
+def test_mst_nans():
+
+    """
+    
+    Unit test, should raise exception if given an array with NaNs
+    
+    """
+    na_matrix = np.array([
+    [0, 1, np.nan],
+    [1, 0, 2],
+    [2, 1, 0]])
+
+    g = Graph(na_matrix)
+
+    with pytest.raises(ValueError):
+        g.construct_mst()
